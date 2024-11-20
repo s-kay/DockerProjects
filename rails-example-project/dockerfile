@@ -1,0 +1,29 @@
+# install Ruby version 3.1.0
+FROM ruby:3.1.0
+
+# port
+EXPOSE 3000
+
+# Working Directory
+WORKDIR /usr/src/app
+
+# install correct version of bundler
+RUN gem install bundler:2.3.3
+
+# copy required for dependancies to be installed
+COPY Gemfile* ./
+
+# install all dependencies
+RUN bundle install
+
+# copy all of source code
+COPY . .
+
+# Run DB migrations
+RUN rails db:migrate RAILS_ENV=production
+
+# Precompile your assets 
+RUN rake assets:precompile
+
+# CMD to run the application
+CMD ["rails", "s", "-e", "production"]
